@@ -2,11 +2,10 @@ import { useState, useEffect } from 'react';
 import Description from '../Description/Description';
 import Options from '../Options/Options';
 import Feedback from '../Feedback/Feedback';
+import Notification from '../Notification/Notification';
 import '../App/App.css';
 
-
 function App() {
-  
   const [feedbackCounts, setFeedbackCounts] = useState(
     JSON.parse(localStorage.getItem('feedbackCounts')) || {
       good: 0,
@@ -14,59 +13,49 @@ function App() {
       bad: 0
     }
   );
-
-  const [feedbackStart, setFeedbackStart] = useState(
-    JSON.parse(localStorage.getItem('feedbackStart')) || false
-  );
-
   useEffect(() => {
     localStorage.setItem('feedbackCounts', JSON.stringify(feedbackCounts));
   }, [feedbackCounts]);
-
-  useEffect(() => {
-    localStorage.setItem('feedbackStart', JSON.stringify(feedbackStart));
-  }, [feedbackStart]);
   
-  const updateFeedback = (feedbackType) => {
+  const updateFeedback = (feedbackType ) => {
     setFeedbackCounts(prevState => ({
       ...prevState,
       [feedbackType]: prevState[feedbackType] + 1
     }));
-
-    setFeedbackStart(true);
   };
 
   const totalFeedback = feedbackCounts.good + feedbackCounts.neutral + feedbackCounts.bad;
-  const positiveFeedback = totalFeedback > 0 ? Math.round((feedbackCounts.good / totalFeedback) * 100) :0;
-  
   
   const resetFeedback = () => {
     setFeedbackCounts({ good: 0, neutral: 0, bad: 0 });
-    setFeedbackStart(false);
   };
-
-
 
 
   return (
     <>
-      <Description />
+      <Description
+        title='Sip Happens Café'
+        text= 'Please leave your feedback about our service by selecting one of the options below.'
+      />
+
       <Options
         feedbackCounts={Object.keys(feedbackCounts)}
         updateFeedback={updateFeedback}
         totalFeedback={totalFeedback}
         resetFeedback={resetFeedback}
       />
+      {totalFeedback > 0 ? (
+        <Feedback
+          good={feedbackCounts.good}
+          neutral={feedbackCounts.neutral}
+          bad={feedbackCounts.bad}
+          totalFeedback={totalFeedback}
+          positiveFeedback={Math.round((feedbackCounts.good / totalFeedback) * 100)}
+        />
+      ) : (
 
-      <Feedback
-        good={feedbackCounts.good}
-        neutral={feedbackCounts.neutral}
-        bad={feedbackCounts.bad}
-        feedbackStart={feedbackStart}
-        totalFeedback={totalFeedback}
-        positiveFeedback={positiveFeedback}
-      />
-     
+        <Notification message="No feedback yet" />
+      )}
     </>
   )
 }
