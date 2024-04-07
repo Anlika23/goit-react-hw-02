@@ -1,0 +1,11 @@
+.optionContainer {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.optionButton {
+    padding: 8px;
+    cursor: pointer;
+    text-transform: capitalize;
+}
